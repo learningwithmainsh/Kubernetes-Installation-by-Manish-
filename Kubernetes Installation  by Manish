@@ -4,7 +4,7 @@
 
 #==========COMMON FOR MASTER & SLAVES START ====
 
-#creat shell  script and run all command one time
+#create shell  script and run all command one time
 
 
 sudo su -
@@ -45,7 +45,7 @@ kubectl apply -f calico.yaml
 #To get nodes
 kubectl get nodes
 
-# Get token
+# Get token for join in  worker node
 
 kubeadm token create --print-join-command
 
