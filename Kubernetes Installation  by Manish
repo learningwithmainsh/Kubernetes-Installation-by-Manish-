@@ -1,0 +1,52 @@
+#Kubernetes Installation  by Manish 
+
+#Note: Open Required Ports In AWS Security Groups. For now we will open All trafic.
+
+#==========COMMON FOR MASTER & SLAVES START ====
+
+#creat shell  script and run all command one time
+
+
+sudo su -
+sudo apt-get update
+
+curl https://releases.rancher.com/install-docker/20.10.sh | sh
+
+sudo apt-get install -y apt-transport-https ca-certificates curl
+
+sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+rm /etc/containerd/config.toml
+systemctl restart containerd
+
+
+
+# for master node only
+#Use master insatnce  private ip
+
+kubeadm init --apiserver-advertise-address=172.31.9.110 --pod-network-cidr=192.168.1.0/16
+
+# Run following command 
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+curl https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/calico.yaml -O
+kubectl apply -f calico.yaml
+
+#To get nodes
+kubectl get nodes
+
+# Get token
+
+kubeadm token create --print-join-command
+
+
